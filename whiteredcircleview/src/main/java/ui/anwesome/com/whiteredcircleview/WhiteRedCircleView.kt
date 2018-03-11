@@ -47,4 +47,22 @@ class WhiteRedCircleView(ctx : Context) : View(ctx) {
             cb(j)
         }
     }
+    data class RedWhiteCircle(var i : Int) {
+        val state = State()
+        fun draw(canvas : Canvas, paint : Paint, x : Float, y : Float, a : Float, r : Float, deg : Float) {
+            val col_factor = (255 * (1 - state.scale)).toInt()
+            paint.color = Color.rgb(255, col_factor, col_factor)
+            canvas.save()
+            canvas.translate(x, y)
+            canvas.rotate(deg)
+            canvas.drawCircle(a, 0f, r, paint)
+            canvas.restore()
+        }
+        fun update(stopcb : (Float) -> Unit) {
+            state.update(stopcb)
+        }
+        fun startUpdating(startcb : () -> Unit) {
+            state.startUpdating(startcb)
+        }
+    }
 }
