@@ -6,6 +6,8 @@ package ui.anwesome.com.whiteredcircleview
 import android.view.*
 import android.content.*
 import android.graphics.*
+import java.util.concurrent.ConcurrentLinkedQueue
+
 class WhiteRedCircleView(ctx : Context) : View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     override fun onDraw(canvas : Canvas) {
@@ -65,4 +67,14 @@ class WhiteRedCircleView(ctx : Context) : View(ctx) {
             state.startUpdating(startcb)
         }
     }
+}
+fun ConcurrentLinkedQueue<WhiteRedCircleView.RedWhiteCircle>.at(i : Int) : WhiteRedCircleView.RedWhiteCircle? {
+    var j = 0
+    forEach {
+        if(i == j) {
+            return it
+        }
+        j++
+    }
+    return null
 }
