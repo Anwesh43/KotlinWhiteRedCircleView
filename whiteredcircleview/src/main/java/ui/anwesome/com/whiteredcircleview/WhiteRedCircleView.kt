@@ -8,7 +8,7 @@ import android.content.*
 import android.graphics.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class WhiteRedCircleView(ctx : Context) : View(ctx) {
+class WhiteRedCircleView(ctx : Context, var n : Int = 6) : View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     override fun onDraw(canvas : Canvas) {
 
@@ -122,6 +122,24 @@ class WhiteRedCircleView(ctx : Context) : View(ctx) {
         fun stop() {
             if(animated) {
                 animated = false
+            }
+        }
+    }
+    data class Renderer(var view : WhiteRedCircleView) {
+        val container : RedWhiteCircleContainer = RedWhiteCircleContainer(view.n)
+        val animator : Animator = Animator(view)
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#212121"))
+            container.draw(canvas, paint)
+            animator.animate {
+                container.update {scale, i ->
+                    animator.stop()
+                }
+            }
+        }
+        fun handleTap () {
+            container.startUpdating {
+                animator.start()
             }
         }
     }
