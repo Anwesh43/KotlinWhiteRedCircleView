@@ -3,6 +3,7 @@ package ui.anwesome.com.whiteredcircleview
 /**
  * Created by anweshmishra on 11/03/18.
  */
+import android.app.Activity
 import android.view.*
 import android.content.*
 import android.graphics.*
@@ -142,6 +143,13 @@ class WhiteRedCircleView(ctx : Context, var n : Int = 6) : View(ctx) {
             container.startUpdating {
                 animator.start()
             }
+        }
+    }
+    companion object {
+        fun create(activity : Activity) : WhiteRedCircleView {
+            val view = WhiteRedCircleView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
