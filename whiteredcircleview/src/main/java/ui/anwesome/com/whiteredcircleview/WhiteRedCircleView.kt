@@ -8,8 +8,10 @@ import android.view.*
 import android.content.*
 import android.graphics.*
 import java.util.concurrent.ConcurrentLinkedQueue
-
-class WhiteRedCircleView(ctx : Context, var n : Int = 6) : View(ctx) {
+val r_val = 239
+val b_val = 83
+val g_val = 80
+class WhiteRedCircleView(ctx : Context, var n : Int = 10) : View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val renderer = Renderer(this)
     override fun onDraw(canvas : Canvas) {
@@ -45,6 +47,7 @@ class WhiteRedCircleView(ctx : Context, var n : Int = 6) : View(ctx) {
             j += dir
             if (j == n || j == -1) {
                 dir *= -1
+                j += dir
             }
         }
         fun executeCb(cb : (Int) -> Unit) {
@@ -55,11 +58,14 @@ class WhiteRedCircleView(ctx : Context, var n : Int = 6) : View(ctx) {
         val state = State()
         fun draw(canvas : Canvas, paint : Paint, x : Float, y : Float, a : Float, r : Float, deg : Float) {
             val col_factor = (255 * (1 - state.scale)).toInt()
-            paint.color = Color.rgb(255, col_factor, col_factor)
+            val r_factor = (255 + (r_val - 255) * state.scale).toInt()
+            val b_factor = (255 + (b_val - 255) * state.scale).toInt()
+            val g_factor = (255 + (g_val - 255) * state.scale).toInt()
+            paint.color = Color.rgb(r_factor, b_factor, g_factor)
             canvas.save()
             canvas.translate(x, y)
             canvas.rotate(i * deg)
-            canvas.drawCircle(a, 0f, r, paint)
+            canvas.drawCircle(a * state.scale, 0f, r, paint)
             canvas.restore()
         }
         fun update(stopcb : (Float) -> Unit) {
@@ -83,7 +89,7 @@ class WhiteRedCircleView(ctx : Context, var n : Int = 6) : View(ctx) {
             paint.color = Color.WHITE
             canvas.drawCircle(w / 2, h / 2, Math.min(w,h) / 18, paint)
             circles.forEach {
-                it.draw(canvas, paint, w / 2, h / 2, Math.min(w,h) / 4, Math.min(w,h) / 18, (360f) / n)
+                it.draw(canvas, paint, w / 2, h / 2, Math.min(w,h) / 3, Math.min(w,h) / 18, (360f) / n)
             }
         }
         fun update(stopcb : (Float,Int) -> Unit) {
