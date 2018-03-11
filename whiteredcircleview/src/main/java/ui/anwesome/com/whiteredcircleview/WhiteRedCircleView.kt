@@ -56,7 +56,7 @@ class WhiteRedCircleView(ctx : Context) : View(ctx) {
             paint.color = Color.rgb(255, col_factor, col_factor)
             canvas.save()
             canvas.translate(x, y)
-            canvas.rotate(deg)
+            canvas.rotate(i * deg)
             canvas.drawCircle(a, 0f, r, paint)
             canvas.restore()
         }
@@ -65,6 +65,39 @@ class WhiteRedCircleView(ctx : Context) : View(ctx) {
         }
         fun startUpdating(startcb : () -> Unit) {
             state.startUpdating(startcb)
+        }
+    }
+    data class RedWhiteCircleContainer(var n : Int) {
+        val containerState = ContainerState(n)
+        val circles : ConcurrentLinkedQueue<RedWhiteCircle> = ConcurrentLinkedQueue()
+        init {
+            for(i in 0..n-1) {
+                circles.add(RedWhiteCircle(i))
+            }
+        }
+        fun draw(canvas : Canvas, paint : Paint) {
+            val w = canvas.width.toFloat()
+            val h = canvas.height.toFloat()
+            paint.color = Color.WHITE
+            canvas.drawCircle(w / 2, h / 2, Math.min(w,h) / 18, paint)
+            circles.forEach {
+                it.draw(canvas, paint, w / 2, h / 2, Math.min(w,h) / 4, Math.min(w,h) / 18, (360f) / n)
+            }
+        }
+        fun update(stopcb : (Float,Int) -> Unit) {
+            containerState.executeCb {
+                circles.at(it)?.update { scale ->
+                    containerState.executeCb{
+                        stopcb(scale, it)
+                    }
+                    containerState.incrementCounter()
+                }
+            }
+        }
+        fun startUpdating(startcb : () -> Unit) {
+            containerState.executeCb {
+                circles.at(it)?.startUpdating(startcb)
+            }
         }
     }
 }
